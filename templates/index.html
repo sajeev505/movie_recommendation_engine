@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMatch | AI Movie Recommender</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C5DD3;
+            --secondary: #00D2FF;
+            --bg-dark: #0f0f15;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-main: #ffffff;
+            --text-muted: #a0a0b0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0f0f15 0%, #1a1a2e 100%);
+        }
+        .glow {
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+            opacity: 0.2;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 10s infinite ease-in-out;
+        }
+        .glow-1 { top: -100px; left: -100px; background: var(--primary); }
+        .glow-2 { bottom: -100px; right: -100px; background: var(--secondary); animation-delay: 5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            margin-top: 2rem;
+        }
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #a0a0b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+        p.subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Search Box */
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            margin-bottom: 4rem;
+        }
+        .search-box {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1.2rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .search-box:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(108, 93, 211, 0.3);
+        }
+        .search-results-dropdown {
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            background: #1e1e2d;
+            border-radius: 12px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .search-item {
+            padding: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .search-item:last-child { border-bottom: none; }
+        .search-item:hover { background: rgba(255,255,255,0.1); }
+
+        /* Recommendations Grid */
+        .results-section {
+            width: 100%;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0; 
+            animation: fadeIn 0.5s forwards;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .movie-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: popIn 0.5s forwards;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--secondary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .movie-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .movie-card:hover::before { opacity: 1; }
+
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        .movie-genre {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: inline-block;
+            background: rgba(255,255,255,0.05);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin-top: 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes popIn { 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Loading */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 30px; height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>CineMatch</h1>
+            <p class="subtitle">Discover your next favorite movie with our AI-powered recommendation engine.</p>
+        </header>
+
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchInput" placeholder="Enter a movie you love... (e.g. Toy Story, Matrix)">
+            <div class="search-results-dropdown" id="dropdown"></div>
+        </div>
+
+        <div class="loader" id="loader"></div>
+
+        <div class="results-section" id="resultsSection">
+            <!-- Results will appear here -->
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const dropdown = document.getElementById('dropdown');
+        const resultsSection = document.getElementById('resultsSection');
+        const loader = document.getElementById('loader');
+
+        let debounceTimer;
+
+        // Search Autocomplete
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            const query = e.target.value;
+            
+            if (query.length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                
+                dropdown.innerHTML = '';
+                if (data.length > 0) {
+                    dropdown.style.display = 'block';
+                    data.forEach(movie => {
+                        const div = document.createElement('div');
+                        div.className = 'search-item';
+                        div.textContent = movie.title;
+                        div.onclick = () => {
+                            searchInput.value = movie.title;
+                            dropdown.style.display = 'none';
+                            getRecommendations(movie.title);
+                        };
+                        dropdown.appendChild(div);
+                    });
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            }, 300);
+        });
+
+        // Hide dropdown on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        async function getRecommendations(title) {
+            loader.style.display = 'block';
+            resultsSection.innerHTML = '';
+
+            try {
+                const res = await fetch(`/recommend?title=${encodeURIComponent(title)}`);
+                const data = await res.json();
+                
+                loader.style.display = 'none';
+                
+                if (data.error) {
+                    resultsSection.innerHTML = `<p style="text-align:center; color: #ff6b6b;">${data.error}</p>`;
+                    return;
+                }
+
+                if (data.length === 0) {
+                    resultsSection.innerHTML = `<p style="text-align:center; color: var(--text-muted);">No recommendations found.</p>`;
+                    return;
+                }
+
+                const titleElem = document.createElement('div');
+                titleElem.className = 'section-title';
+                titleElem.innerHTML = `<span>Because you liked</span> <strong>${title}</strong>`;
+                resultsSection.appendChild(titleElem);
+
+                const grid = document.createElement('div');
+                grid.className = 'grid';
+
+                data.forEach((movie, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.style.animationDelay = `${index * 0.1}s`; // Staggered animation
+                    card.onclick = () => {
+                        searchInput.value = movie.title;
+                        getRecommendations(movie.title);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    };
+                    
+                    card.innerHTML = `
+                        <div class="movie-title">${movie.title}</div>
+                        <div class="movie-genre">${movie.genres.replace(/\|/g, ', ')}</div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                resultsSection.appendChild(grid);
+
+            } catch (err) {
+                console.error(err);
+                loader.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Download and preprocess data
+        run: |
+          python scripts/download_data.py
+          python scripts/preprocess.py
+
+      - name: Train model (quick — reduced grid for CI)
+        run: python scripts/train_model.py
+        env:
+          CI: true
+
+      - name: Run linter
+        run: flake8 src/ scripts/ tests/ --max-line-length=120 --ignore=E501,W503
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+
+      - name: API smoke test
+        run: |
+          # Start API in background
+          python -m src.backend.app &
+          sleep 3
+          # Health check
+          curl -f http://localhost:5000/api/health
+          # Recommendations check
+          curl -f http://localhost:5000/api/recommendations/1?n=3
+          # Kill background process
+          kill %1

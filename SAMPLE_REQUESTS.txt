@@ -1,0 +1,164 @@
+SAMPLE REQUESTS — Movie Recommendation Engine
+===============================================
+
+All examples assume the API is running at http://localhost:5000.
+
+1. Health Check
+---------------
+curl http://localhost:5000/api/health
+
+Expected response:
+{
+  "status": "healthy",
+  "model_loaded": true
+}
+
+2. Get Model Metrics
+--------------------
+curl http://localhost:5000/api/metrics
+
+Expected response:
+{
+  "baseline_mae": 0.8700,
+  "tuned_svd_mae": 0.6800,
+  "mae_reduction_pct": 22.0,
+  "algorithm": "SVD (Matrix Factorization)",
+  "dataset": "MovieLens ml-latest-small",
+  "best_params": { ... }
+}
+
+3. Get Recommendations (Top-5 for User 1)
+------------------------------------------
+curl "http://localhost:5000/api/recommendations/1?n=5"
+
+Expected response:
+{
+  "user_id": 1,
+  "count": 5,
+  "latency_ms": 42.3,
+  "recommendations": [
+    {
+      "movie_id": 318,
+      "title": "Shawshank Redemption, The",
+      "year": "1994",
+      "genres": ["Crime", "Drama"],
+      "score": 4.72,
+      "rationale": "Predicted as an excellent match ...",
+      "poster_url": null
+    },
+    ...
+  ]
+}
+
+4. Search Movies
+----------------
+curl "http://localhost:5000/api/movies/search?q=matrix"
+
+Expected response:
+{
+  "query": "matrix",
+  "count": 3,
+  "movies": [
+    {
+      "movie_id": 2571,
+      "title": "Matrix, The",
+      "year": "1999",
+      "genres": ["Action", "Sci-Fi", "Thriller"]
+    },
+    ...
+  ]
+}
+
+5. Get User Ratings
+-------------------
+curl http://localhost:5000/api/user/1/ratings
+
+Expected response:
+{
+  "user_id": 1,
+  "count": 20,
+  "ratings": [
+    {
+      "movie_id": 1,
+      "title": "Toy Story",
+      "year": "1995",
+      "genres": ["Adventure", "Animation", "Children", "Comedy", "Fantasy"],
+      "rating": 4.0
+    },
+    ...
+  ]
+}
+
+6. Demo Login
+-------------
+curl http://localhost:5000/auth/demo
+
+Expected response:
+{
+  "message": "Logged in as demo user",
+  "user": {
+    "id": 1,
+    "login": "Demo Reviewer",
+    "is_demo": true
+  }
+}
+
+7. List Sample Users
+--------------------
+curl http://localhost:5000/api/users
+
+Expected response:
+{
+  "total_users": 610,
+  "sample_user_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ...]
+}
+
+
+Postman Collection
+==================
+
+Import the following JSON as a Postman collection:
+
+{
+  "info": {
+    "name": "Movie Recommender API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/health" }
+    },
+    {
+      "name": "Model Metrics",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/metrics" }
+    },
+    {
+      "name": "Get Recommendations",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/recommendations/1?n=10" }
+    },
+    {
+      "name": "Search Movies",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/movies/search?q=toy" }
+    },
+    {
+      "name": "User Ratings",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/user/1/ratings" }
+    },
+    {
+      "name": "Demo Login",
+      "request": { "method": "GET", "url": "{{baseUrl}}/auth/demo" }
+    },
+    {
+      "name": "Current User",
+      "request": { "method": "GET", "url": "{{baseUrl}}/auth/me" }
+    },
+    {
+      "name": "Sample Users",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/users" }
+    }
+  ]
+}

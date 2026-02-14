@@ -1,0 +1,83 @@
+ARCHITECTURE — Movie Recommendation Engine
+============================================
+
+System Overview
+---------------
+
+                  ┌──────────────────────────────────────┐
+                  │           TRAINING PIPELINE           │
+                  │                                      │
+                  │  download_data.py                    │
+                  │       │                              │
+                  │       ▼                              │
+                  │  preprocess.py                       │
+                  │       │                              │
+                  │       ▼                              │
+                  │  train_model.py                      │
+                  │    ├── BaselineOnly (ALS) → MAE      │
+                  │    ├── SVD default → MAE             │
+                  │    ├── GridSearchCV → best params    │
+                  │    └── Export: svd_model.pkl          │
+                  │              metrics.json             │
+                  └──────────────────────────────────────┘
+                                    │
+                         (offline, run once)
+                                    │
+                                    ▼
+┌──────────────┐   HTTP/JSON   ┌──────────────────────────┐
+│   FRONTEND   │ ◄───────────► │        FLASK API          │
+│              │               │                          │
+│ index.html   │  GET /api/    │  app.py ← factory        │
+│ styles.css   │  recommend-   │  routes.py ← endpoints   │
+│ app.js       │  ations/1     │  recommender.py ← engine │
+│              │               │  auth.py ← OAuth/demo    │
+│ nginx:80     │               │  config.py ← env vars    │
+└──────────────┘               │                          │
+                               │  gunicorn:5000            │
+                               └────────┬─────────────────┘
+                                        │
+                                        ▼
+                               ┌──────────────────┐
+                               │   MODEL LAYER     │
+                               │                  │
+                               │  svd_model.pkl   │
+                               │  (sklearn SVD)   │
+                               │                  │
+                               │  movies_meta.csv │
+                               │  metrics.json    │
+                               └──────────────────┘
+
+Components
+----------
+
+1. TRAINING PIPELINE (scripts/)
+   - download_data.py: Fetches MovieLens ml-latest-small ZIP
+   - preprocess.py: Cleans data, extracts years/genres, creates train/test split
+   - train_model.py: Trains baseline and SVD, runs GridSearchCV, exports model
+
+2. BACKEND API (src/backend/)
+   - app.py: Flask application factory, CORS, model initialization
+   - config.py: Configuration from environment variables
+   - recommender.py: SVD model loading and top-N prediction generation
+   - routes.py: REST endpoints (recommendations, search, ratings, health)
+   - auth.py: GitHub OAuth flow + DEMO_MODE bypass
+
+3. FRONTEND (src/frontend/)
+   - index.html: Single-page app with landing, metrics, auth, recommendations
+   - styles.css: Dark theme design system (Inter font, muted blues)
+   - app.js: API calls, auth handling, dynamic card rendering
+
+4. DEVOPS
+   - Dockerfile: Python 3.11 slim + gunicorn for backend
+   - Dockerfile.frontend: nginx:alpine for static frontend
+   - docker-compose.yml: Orchestrates both services
+   - ci.yml: GitHub Actions — lint, test, API smoke test
+
+Data Flow
+---------
+1. User clicks "Try Demo" → auth.py creates demo session
+2. Frontend fetches GET /api/recommendations/1?n=12
+3. recommender.py loads SVD model, predicts scores for all unrated movies
+4. Top-N sorted by predicted score, enriched with metadata
+5. JSON response returned with latency measurement
+6. Frontend renders movie cards with scores and rationales

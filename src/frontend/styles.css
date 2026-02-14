@@ -1,0 +1,578 @@
+/* ============================================================
+   Movie Recommender — Cinematic Void Design System
+   ============================================================ */
+
+:root {
+    /* Base Palette - Void Theme */
+    --bg-void: #030305;
+    --bg-surface: #0a0a0f;
+    --bg-surface-2: #14141d;
+    --bg-glass: rgba(20, 20, 29, 0.6);
+    --border-glass: rgba(255, 255, 255, 0.08);
+
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+
+    /* Brand Accents */
+    --accent-primary: #6366f1;
+    /* Indigo */
+    --accent-glow: rgba(99, 102, 241, 0.5);
+
+    /* Gradients for Posters */
+    --grad-action: linear-gradient(160deg, #ef4444 0%, #450a0a 100%);
+    --grad-scifi: linear-gradient(160deg, #06b6d4 0%, #0e7490 100%);
+    --grad-drama: linear-gradient(160deg, #f59e0b 0%, #b45309 100%);
+    --grad-comedy: linear-gradient(160deg, #facc15 0%, #a16207 100%);
+    --grad-romance: linear-gradient(160deg, #ec4899 0%, #be185d 100%);
+    --grad-horror: linear-gradient(160deg, #374151 0%, #111827 100%);
+    --grad-default: linear-gradient(160deg, #6366f1 0%, #4338ca 100%);
+
+    /* Fonts */
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Metrics */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2.5rem;
+    --space-2xl: 4rem;
+}
+
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+button {
+    font-family: inherit;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+/* ============================================================
+   Header — Pure Minimalist
+   ============================================================ */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: var(--space-md) var(--space-xl);
+    background: rgba(3, 3, 5, 0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-glass);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+}
+
+.nav {
+    display: flex;
+    gap: var(--space-lg);
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+}
+
+.auth-area {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn--primary {
+    background: var(--text-primary);
+    color: var(--bg-void);
+}
+
+.btn--primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.btn--outline {
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+}
+
+.btn--outline:hover {
+    border-color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================================
+   Hero — Immersive
+   ============================================================ */
+.main {
+    padding-top: 80px;
+    min-height: 100vh;
+}
+
+.hero {
+    padding: var(--space-2xl) var(--space-xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Ambient glow background */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    opacity: 0.15;
+    pointer-events: none;
+    filter: blur(100px);
+}
+
+.hero-label {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border-glass);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-lg);
+    backdrop-filter: blur(10px);
+}
+
+.hero-title {
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 800;
+    margin-bottom: var(--space-md);
+    background: linear-gradient(to bottom, #fff 40%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--space-xl);
+}
+
+/* ============================================================
+   Metrics — Clean Data Strip
+   ============================================================ */
+.metrics-section {
+    border-top: 1px solid var(--border-glass);
+    border-bottom: 1px solid var(--border-glass);
+    background: rgba(255, 255, 255, 0.02);
+    padding: var(--space-lg) 0;
+    margin-bottom: var(--space-2xl);
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-xl);
+    gap: var(--space-lg);
+}
+
+.metric-card {
+    text-align: left;
+}
+
+.metric-value {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+
+.metric-icon {
+    display: none;
+}
+
+/* Simplified */
+
+/* ============================================================
+   Interface & Search
+   ============================================================ */
+.recs-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-xl) var(--space-2xl);
+}
+
+.interface-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+}
+
+.section-head h2 {
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+}
+
+.section-head p {
+    color: var(--text-secondary);
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+.search-input {
+    width: 100%;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-glass);
+    padding: 16px 20px 16px 48px;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--text-secondary);
+    background: var(--bg-surface);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* ============================================================
+   Movie Cards — Procedural Art
+   ============================================================ */
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-lg);
+}
+
+.movie-card {
+    position: relative;
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    aspect-ratio: 2/3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* Text at bottom */
+    cursor: pointer;
+    border: 1px solid var(--border-glass);
+}
+
+.movie-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+/* Procedural Poster Background */
+.movie-poster-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    transition: opacity 0.5s ease;
+}
+
+/* Gradients mapped via JS classes */
+.bg-action {
+    background: var(--grad-action);
+}
+
+.bg-adventure {
+    background: var(--grad-scifi);
+}
+
+.bg-animation {
+    background: var(--grad-comedy);
+}
+
+.bg-comedy {
+    background: var(--grad-comedy);
+}
+
+.bg-crime {
+    background: var(--grad-horror);
+}
+
+.bg-documentary {
+    background: var(--grad-drama);
+}
+
+.bg-drama {
+    background: var(--grad-drama);
+}
+
+.bg-fantasy {
+    background: var(--grad-scifi);
+}
+
+.bg-horror {
+    background: var(--grad-horror);
+}
+
+.bg-romance {
+    background: var(--grad-romance);
+}
+
+.bg-scifi {
+    background: var(--grad-scifi);
+}
+
+.bg-thriller {
+    background: var(--grad-action);
+}
+
+.bg-default {
+    background: var(--grad-default);
+}
+
+/* Overlay to make text readable */
+.movie-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+    z-index: 2;
+}
+
+/* Content */
+.movie-content {
+    position: relative;
+    z-index: 3;
+    padding: var(--space-lg);
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+}
+
+.movie-score {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 4;
+}
+
+.movie-year {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 4px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.movie-title {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    /* Large distinctive title */
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: var(--space-sm);
+    color: #fff;
+    /* Optical kerning for poster style */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.movie-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    opacity: 0.8;
+}
+
+.genre-tag {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Hover rationale reveal */
+.movie-rationale {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 0;
+    transition: all 0.3s ease;
+}
+
+.movie-card:hover .movie-rationale {
+    max-height: 100px;
+    opacity: 1;
+    margin-top: var(--space-sm);
+}
+
+/* ============================================================
+   Login / Loading
+   ============================================================ */
+.login-card {
+    text-align: center;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-surface);
+    padding: var(--space-2xl);
+    border-radius: var(--radius-lg);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--text-primary);
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+    margin: 0 auto var(--space-md);
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================================
+   Response
+   ============================================================ */
+@media (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+}
+
+/* User Ratings Chips */
+.rating-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.rating-chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+.rating-chip-star {
+    color: #fbbf24;
+    font-weight: 600;
+}

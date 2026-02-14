@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personalized Movie Recommendation Engine using SVD-based collaborative filtering.">
+    <title>MovieRec — AI Powered Discovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">MOVIEREC</div>
+        
+        <!-- Auth Area -->
+        <div class="auth-area" id="authArea">
+            <button class="btn btn--outline" id="loginBtn" onclick="handleLogin()">Sign in</button>
+            <button class="btn btn--primary" id="demoBtn" onclick="handleDemoLogin()">Try Demo</button>
+        </div>
+
+        <div class="auth-area hidden" id="userArea">
+            <span class="nav-link" id="userName">User</span>
+            <button class="btn btn--outline" onclick="handleLogout()">Logout</button>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- IMMERSIVE HERO -->
+        <section class="hero">
+            <span class="hero-label">Machine Learning Portfolio</span>
+            <h1 class="hero-title">Discover your next<br>favorite film.</h1>
+            <p class="hero-subtitle">
+                Engineered with scikit-learn TruncatedSVD using 100K ratings to personalize content discovery.
+            </p>
+        </section>
+
+        <!-- DATA STRIP -->
+        <section class="metrics-section">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="metricAlgorithm">SVD</div>
+                    <div class="metric-label">Algorithm</div>
+                </div>
+                <!-- Highlighted Metric -->
+                <div class="metric-card">
+                    <div class="metric-value" style="color: var(--accent-primary);" id="metricMAE">—</div>
+                    <div class="metric-label">MAE Reduction</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="metricLatency">—</div>
+                    <div class="metric-label">Inference Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="metricDataset">100K</div>
+                    <div class="metric-label">Ratings</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOGIN / DEMO PROMPT -->
+        <section class="recs-container" id="loginPrompt">
+            <div class="login-card">
+                <h2>Experience the Engine</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Sign in to see personalized recommendations generated in real-time.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn--primary" onclick="handleDemoLogin()">
+                        Launch Demo
+                    </button>
+                    <button class="btn btn--outline" onclick="handleLogin()">
+                        GitHub Sign In
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN INTERFACE -->
+        <section class="recs-container hidden" id="recommendations">
+            
+            <div class="interface-header">
+                <div class="section-head">
+                    <h2>For You</h2>
+                    <p>Top picks based on your viewing history.</p>
+                </div>
+                
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search for movies..." oninput="handleSearch(this.value)">
+                </div>
+            </div>
+
+            <!-- Recommendations Grid -->
+            <div id="recsContent">
+                <div class="movies-grid" id="moviesGrid">
+                    <!-- JS Injected Cards -->
+                </div>
+            </div>
+
+            <!-- User Ratings -->
+            <div id="userRatings" class="hidden" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 1rem;">Based on your ratings</h3>
+                <div id="ratingsGrid" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+            </div>
+
+            <!-- Search Results -->
+            <div class="search-results hidden" id="searchResults">
+                <div class="section-head" style="margin-bottom: 1.5rem;">
+                    <h2>Search Results</h2>
+                </div>
+                <div class="movies-grid" id="searchGrid"></div>
+            </div>
+
+            <!-- Loading -->
+            <div class="hidden" id="loading" style="text-align: center; padding: 4rem;">
+                <div class="spinner"></div>
+                <p style="color: var(--text-muted);">Processing...</p>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

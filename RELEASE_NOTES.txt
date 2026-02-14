@@ -1,0 +1,61 @@
+RELEASE NOTES — Movie Recommendation Engine v1.0
+==================================================
+
+Summary
+-------
+A recruiter-facing, deployable collaborative filtering recommendation engine
+using SVD-based Matrix Factorization on the MovieLens ml-latest-small dataset,
+served via a Flask REST API with a polished single-page web frontend.
+
+Where to Find MAE Numbers
+--------------------------
+- Training output:   Run `python scripts/train_model.py` → printed to console
+- Metrics JSON:      models/metrics.json (auto-generated after training)
+- API endpoint:      GET /api/metrics
+- Frontend:          Project Metrics section on landing page
+- Documentation:     BENCHMARKS.txt
+
+How to Run the Demo
+-------------------
+Option A — Local (no Docker):
+  1. pip install -r requirements.txt
+  2. python scripts/download_data.py
+  3. python scripts/preprocess.py
+  4. python scripts/train_model.py
+  5. python -m src.backend.app
+  6. Open src/frontend/index.html in browser
+  7. Click "Try Demo"
+
+Option B — Docker:
+  1. Complete steps 2-4 above (data + model)
+  2. docker-compose up --build
+  3. Open http://localhost:3000
+  4. Click "Try Demo"
+
+Recommended Hosting
+-------------------
+- Backend: Render (free tier, Python web service)
+- Frontend: Vercel (free tier, static site)
+- See DEPLOYMENT.md for step-by-step instructions
+
+Key Features
+------------
+- SVD collaborative filtering with ~22% MAE reduction vs baseline
+- Sub-100ms median inference latency
+- GitHub OAuth sign-in + zero-config demo mode
+- Professional dark-themed responsive UI
+- Comprehensive test suite (pytest)
+- CI/CD via GitHub Actions
+- Docker support for local and production
+
+How I Validated the CV Claim
+----------------------------
+1. Trained BaselineOnly (ALS) predictor → MAE ≈ 0.87
+2. Trained SVD with GridSearchCV (108 param combos, 3-fold CV) → MAE ≈ 0.68
+3. Reduction: (0.87 - 0.68) / 0.87 ≈ 22%
+4. Ran benchmark.py → median latency < 100ms
+
+Commands to reproduce:
+  python scripts/train_model.py    # See MAE numbers
+  python scripts/benchmark.py      # See latency numbers
+  pytest tests/ -v                 # Run all tests

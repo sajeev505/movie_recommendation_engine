@@ -1,0 +1,13 @@
+{
+  "baseline_mae": 0.8271,
+  "default_svd_mae": 0.7228,
+  "tuned_svd_mae": 0.7182,
+  "mae_reduction_pct": 13.2,
+  "best_params": {
+    "n_components": 50,
+    "n_iter": 20
+  },
+  "dataset": "MovieLens ml-latest-small",
+  "algorithm": "TruncatedSVD (Matrix Factorization)",
+  "library": "scikit-learn"
+}
